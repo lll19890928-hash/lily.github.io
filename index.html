@@ -843,9 +843,30 @@
             document.getElementById('result-area').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
+         // 「返回重算」按钮：隐藏结果，重新显示输入区并清空表单
+document.getElementById('btn-recalc').addEventListener('click', function () {
+    // 清空表单
+    document.getElementById('bazi-form').reset();
+
+    // 隐藏结果区域
+    document.getElementById('result-area').classList.add('hidden');
+
+    // 显示输入区域
+    document.getElementById('input-area').classList.remove('hidden');
+
+    // 销毁图表，避免重复叠加
+    if (window.chartInstance) {
+        window.chartInstance.destroy();
+        window.chartInstance = null;
+    }
+
+    // 回到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
     </script>
 </body>
 </html>
+
 
 
 
