@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YiEngine V4.4 - 易学全能自适应版</title>
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.2.37/lunar.js"></script>
+    <style>
+        :root {
+            --bg-paper: #f4f1ea;
+            --ink: #2c2c2c;
+            --cinnabar: #b92b27;
+            --indigo: #283747;
+            --gold: #d4ac0d;
+            --font-serif: "Kaiti", "STKaiti", "Georgia", serif;
+            --font-sans: "PingFang SC", "Microsoft YaHei", sans-serif;
+            --sidebar-width: 340px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: var(--font-serif);
+            background-color: #202020;
+            color: var(--ink);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- 移动端菜单按钮 --- */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        /* --- 左侧控制栏 --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            background-color: #2c2c2c;
+            color: #ccc;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #000;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+            z-index: 90;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .title-box {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #444;
+            margin-top: 10px; /* 留出空间给移动端关闭按钮 */
+        }
+        .title-main { font-size: 24px; color: var(--gold); font-weight: bold; letter-spacing: 2px; }
+        .title-sub { font-size: 12px; color: #888; margin-top: 5px; font-family: var(--font-sans); }
+
+        .system-switch { display: flex; background: #1a1a1a; border-radius: 4px; padding: 4px; margin-bottom: 20px; }
+        .sys-btn { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-size: 14px; color: #666; transition: 0.3s; border-radius: 2px; }
+        .sys-btn.active { background: var(--gold); color: #1a1a1a; font-weight: bold; }
+
+        .group-label { color: var(--gold); font-size: 12px; margin-top: 20px; margin-bottom: 8px; border-left: 3px solid var(--gold); padding-left: 8px;}
+        
+        select, input {
+            width: 100%; padding: 10px; background: #3a3a3a; border: 1px solid #555; color: #fff;
+            border-radius: 4px; font-family: var(--font-sans); font-size: 14px; margin-bottom: 10px;
+        }
+        select:focus, input:focus { border-color: var(--gold); outline: none; background: #444; }
+
+        .scale-btn {
+            background: #333; border: 1px solid #444; color: #aaa; padding: 8px; text-align: center;
+            cursor: pointer; font-size: 13px; border-radius: 3px; transition: 0.2s;
+            margin-bottom: 5px; display: inline-block; width: 48%;
+        }
+        .scale-btn.active { background: var(--indigo); border-color: #555; color: #fff; font-weight: bold; }
+
+        button.run-btn {
+            width: 100%; padding: 14px; background: var(--cinnabar); color: #fff; border: none;
+            font-size: 16px; cursor: pointer; border-radius: 4px; font-weight: bold;
+            margin-top: 25px; letter-spacing: 3px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: 0.2s; margin-bottom: 50px;
+        }
+        button.run-btn:active { transform: scale(0.98); }
+
+        /* --- 右侧视口 --- */
+        .viewport {
+            flex: 1;
+            background-color: var(--bg-paper);
+            padding: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            display: block;
+            width: 100%; /* 确保在移动端占满 */
+        }
+
+        .content-wrapper {
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            min-height: 100%;
+        }
+
+        .result-card {
+            background: #fff; box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            padding: 0 0 40px 0; position: relative; border-top: 6px solid var(--ink); animation: fadeIn 0.6s;
+            margin-bottom: 50px; border-radius: 4px; overflow: hidden; width: 100%;
+        }
+
+        .card-header {
+            padding: 25px 40px; border-bottom: 1px solid #eee; background: #fff;
+            display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap;
+        }
+        .h-title { font-size: 30px; font-weight: bold; color: var(--ink); margin-right: 10px;}
+        .h-meta { font-size: 14px; color: #888; font-family: var(--font-sans); margin-top: 5px; }
+
+        .card-body { padding: 30px 40px; }
+
+        /* 通俗解释模块 */
+        .vernacular-box {
+            background: #fffcf0; border: 1px solid #e0dacc; padding: 25px; margin-top: 25px;
+            border-radius: 6px; position: relative;
+        }
+        .vb-title { font-weight: bold; font-size: 18px; color: #8a6d3b; margin-bottom: 15px; display: flex; align-items: center; }
+        .vb-title::before { content: "💬"; margin-right: 10px; }
+        
+        .dimension-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .dimension-card { background: #fff; border: 1px solid #eaddcf; padding: 15px; border-radius: 4px; }
+        .dc-title { font-weight: bold; color: var(--cinnabar); margin-bottom: 8px; font-size: 15px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;}
+        .dc-content { font-size: 14px; line-height: 1.6; color: #444; text-align: justify; }
+
+        .logic-chain {
+            font-family: var(--font-sans); font-size: 14px; color: #555; background: #f4f4f4;
+            padding: 15px; border-radius: 4px; margin-bottom: 20px; line-height: 1.8; overflow-wrap: break-word;
+        }
+        .logic-arrow { color: #999; margin: 0 5px; display: inline-block;}
+        .logic-highlight { font-weight: bold; color: var(--indigo); }
+
+        .book-ref { text-align: right; font-size: 12px; color: #999; margin-top: 15px; font-style: italic; }
+
+        /* 聊天区 */
+        .chat-container {
+            margin-top: 40px; border-top: 2px dashed #bda27e; padding-top: 30px; background: #fdfdfd;
+        }
+        .chat-header { font-size: 18px; font-weight: bold; color: var(--indigo); margin-bottom: 15px; border-left: 4px solid var(--gold); padding-left: 10px;}
+        
+        .chat-history {
+            min-height: 120px; max-height: 400px; overflow-y: auto; background: #f9f9f9; 
+            border: 1px solid #eee; border-radius: 8px; padding: 20px; margin-bottom: 15px;
+        }
+        .chat-msg { margin-bottom: 15px; display: flex; }
+        .chat-msg.user { justify-content: flex-end; }
+        .chat-msg.bot { justify-content: flex-start; }
+        
+        .bubble { 
+            padding: 10px 18px; max-width: 85%; font-size: 15px; line-height: 1.6; font-family: var(--font-sans);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); word-wrap: break-word;
+        }
+        .chat-msg.user .bubble { background: var(--indigo); color: #fff; border-radius: 18px 18px 2px 18px; }
+        .chat-msg.bot .bubble { background: #fff; color: #333; border: 1px solid #ddd; border-radius: 18px 18px 18px 2px; }
+        
+        .chat-input-area { display: flex; gap: 10px; position: relative; }
+        .chat-input { 
+            flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 25px; 
+            background: #fff; color: #333; font-size: 15px; transition: 0.3s; margin-bottom: 0;
+            font-family: var(--font-sans);
+        }
+        .chat-btn { 
+            background: var(--gold); color: #fff; border: none; padding: 0 20px; border-radius: 25px; 
+            cursor: pointer; font-weight: bold; font-size: 14px; white-space: nowrap;
+        }
+
+        /* 奇门九宫 (响应式) */
+        .qimen-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+            background: #000; border: 2px solid #000; width: 100%; max-width: 400px; margin: 0 auto;
+        }
+        .q-cell {
+            background: #fff; aspect-ratio: 1; position: relative; padding: 2px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .q-cell.highlight { background: #fff9c4; box-shadow: inset 0 0 0 2px var(--gold); }
+        .q-god { position: absolute; top: 2px; right: 2px; font-size: 10px; color: var(--cinnabar); transform: scale(0.9); transform-origin: top right; }
+        .q-star { font-weight: bold; font-size: 14px; margin-top: 8px; color: #333; }
+        .q-door { color: #2e86c1; font-weight: bold; font-size: 15px; margin: 2px 0; }
+        .q-gan { font-family: monospace; font-size: 12px; color: #555; }
+        .q-pos { position: absolute; bottom: 1px; left: 2px; font-size: 9px; color: #ccc; transform: scale(0.9); transform-origin: bottom left; }
+
+        /* 梅花卦象 */
+        .gua-visual { display: flex; justify-content: center; gap: 30px; margin-bottom: 30px; flex-wrap: wrap; }
+        .gua-item { text-align: center; }
+        .gua-icon { font-size: 60px; line-height: 1; color: #333; transition: 0.3s; font-family: "Segoe UI Symbol", sans-serif;} 
+        .gua-text { font-size: 16px; margin-top: 10px; color: #555; font-weight: bold; }
+        .gua-arrow { font-size: 30px; color: #ccc; margin-top: 15px; transform: rotate(90deg); display: none;} /* 手机端默认隐藏箭头或改方向 */
+
+        /* --- 响应式媒体查询 (Mobile Responsive) --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100vh; overflow: hidden; }
+            
+            /* 侧边栏变为抽屉式 */
+            .sidebar {
+                position: fixed;
+                top: 0; left: 0; bottom: 0;
+                width: 280px; min-width: 0;
+                transform: translateX(-100%);
+                z-index: 1000;
+                padding-top: 60px; /* 避开汉堡菜单 */
+                transition: transform 0.3s ease;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+            }
+            .sidebar.open { transform: translateX(0); }
+            
+            .menu-toggle { display: block; }
+            
+            /* 遮罩层 */
+            .overlay {
+                display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.5); z-index: 900;
+            }
+            .overlay.active { display: block; }
+
+            /* 右侧内容适配 */
+            .viewport { padding: 0; width: 100%; height: 100%; }
+            .content-wrapper { padding: 15px; padding-top: 60px; } /* 顶部留出菜单空间 */
+            
+            .result-card { padding: 0 0 20px 0; border-radius: 8px; margin-bottom: 30px; }
+            .card-header { padding: 20px; flex-direction: column; align-items: flex-start; }
+            .card-body { padding: 20px; }
+            
+            .h-title { font-size: 22px; }
+            .h-meta { margin-top: 5px; }
+
+            /* 调整网格 */
+            .dimension-grid { grid-template-columns: 1fr; }
+            
+            /* 调整卦象显示 */
+            .gua-visual { gap: 15px; }
+            .gua-icon { font-size: 50px; }
+            .gua-arrow { display: block; transform: rotate(90deg); margin: 0; line-height: 50px; font-size: 20px; } /* 竖排箭头 */
+            
+            /* 调整奇门盘 */
+            .qimen-grid { width: 100%; max-width: 320px; }
+            .q-star, .q-door { font-size: 13px; }
+            
+            /* 聊天区 */
+            .chat-input-area { flex-direction: row; }
+            .chat-btn { padding: 0 15px; font-size: 13px; }
+        }
+
+        .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<!-- 移动端遮罩与菜单 -->
+<button class="menu-toggle" onclick="toggleSidebar()">☰ 设置</button>
+<div class="overlay" onclick="toggleSidebar()" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+    <div class="title-box">
+        <div class="title-main">YiEngine V4.4</div>
+        <div class="title-sub">易学全能版</div>
+    </div>
+
+    <div class="system-switch">
+        <div class="sys-btn active" id="btn-meihua" onclick="setSystem('meihua')">梅花易数</div>
+        <div class="sys-btn" id="btn-qimen" onclick="setSystem('qimen')">奇门遁甲</div>
+    </div>
+
+    <!-- 梅花易数控制 -->
+    <div id="ctrl-meihua">
+        <div class="group-label">起卦方式</div>
+        <select id="mh-method" onchange="toggleMhInput()">
+            <option value="time">时间先天起卦</option>
+            <option value="word">汉字起卦 (测字)</option>
+            <option value="number">数字起卦 (物数)</option>
+            <option value="direction">方位起卦 (后天)</option>
+        </select>
+        
+        <div id="mh-input-box" class="hidden">
+            <div class="group-label">占测内容</div>
+            <input type="text" id="mh-content" placeholder="输入汉字或数字...">
+            <div id="mh-dir-select" class="hidden">
+                <select id="mh-direction">
+                    <option value="1">西北 (乾)</option>
+                    <option value="6">正北 (坎)</option>
+                    <option value="7">东北 (艮)</option>
+                    <option value="4">正东 (震)</option>
+                    <option value="5">东南 (巽)</option>
+                    <option value="3">正南 (离)</option>
+                    <option value="8">西南 (坤)</option>
+                    <option value="2">正西 (兑)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 奇门遁甲控制 -->
+    <div id="ctrl-qimen" class="hidden">
+        <div class="group-label">时间维度</div>
+        <div>
+            <div class="scale-btn" id="scale-year" onclick="setQmScale('year')">年家 (国运)</div>
+            <div class="scale-btn" id="scale-month" onclick="setQmScale('month')">月家 (谋望)</div>
+            <div class="scale-btn" id="scale-day" onclick="setQmScale('day')">日家 (出行)</div>
+            <div class="scale-btn active" id="scale-hour" onclick="setQmScale('hour')">时家 (决断)</div>
+        </div>
+
+        <div id="qm-focus-box">
+            <div class="group-label">问测主题 (AI决策)</div>
+            <select id="qm-focus">
+                <option value="general">时运/总览</option>
+                <option value="wealth">求财/生意</option>
+                <option value="marriage">婚姻/感情</option>
+                <option value="career">工作/升迁</option>
+                <option value="lost">寻物/捕盗</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 公共时间 -->
+    <div class="group-label">
+        公历时间 
+        <span style="font-size:10px;color:#888;font-weight:normal">(自动排盘)</span>
+    </div>
+    <div style="display:flex; gap:5px;">
+        <input type="number" id="year" placeholder="年">
+        <select id="month"></select>
+        <select id="day"></select>
+    </div>
+    <div style="display:flex; gap:5px;">
+        <select id="hour"></select>
+        <input type="number" id="minute" value="0" placeholder="分">
+    </div>
+    <div id="lunar-info" style="font-size:11px; color:#888; text-align:center; margin-top:5px;"></div>
+
+    <button class="run-btn" onclick="runAndClose()">开始推演</button>
+</div>
+
+<div class="viewport">
+    <div class="content-wrapper" id="display">
+        <div style="text-align: center; margin-top: 100px; color: #888;">
+            <h2>请在左侧设定条件</h2>
+            <p>手机端请点击左上角“设置”按钮</p>
+            <p style="font-size:12px; margin-top:20px;">* 系统已适配手机、平板及桌面端</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================= 数据层 (Strict Classics) =================
+    const ZHI_NUM = { "子":1, "丑":2, "寅":3, "卯":4, "辰":5, "巳":6, "午":7, "未":8, "申":9, "酉":10, "戌":11, "亥":12 };
+    
+    const BAGUA = {
+        1: {n:"乾", w:"金", desc:"天、父、刚健、圆满", icon:"☰"},
+        2: {n:"兑", w:"金", desc:"泽、少女、喜悦、口舌", icon:"☱"},
+        3: {n:"离", w:"火", desc:"火、中女、光明、文书", icon:"☲"},
+        4: {n:"震", w:"木", desc:"雷、长男、震动、虚惊", icon:"☳"},
+        5: {n:"巽", w:"木", desc:"风、长女、进入、利市", icon:"☴"},
+        6: {n:"坎", w:"水", desc:"水、中男、险陷、智慧", icon:"☵"},
+        7: {n:"艮", w:"土", desc:"山、少男、停止、稳重", icon:"☶"},
+        8: {n:"坤", w:"土", desc:"地、老母、柔顺、包容", icon:"☷"}
+    };
+
+    const RI_JIA_MAP = {
+        "子":2,"午":2, "丑":6,"未":6, "寅":1,"申":1,
+        "卯":8,"酉":8, "辰":4,"戌":4, "巳":9,"亥":9
+    };
+
+    let currentResult = null; 
+
+    // ================= 初始化 =================
+    let system = 'meihua';
+    let qmScale = 'hour';
+
+    window.onload = function() {
+        const now = new Date();
+        document.getElementById('year').value = now.getFullYear();
+        initSelect('month', 1, 12, now.getMonth()+1);
+        initSelect('day', 1, 31, now.getDate());
+        initSelect('hour', 0, 23, now.getHours());
+        updateLunar();
+        
+        // 移动端自适应调整
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('overlay').classList.remove('active');
+            }
+        });
+    };
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
+    function runAndClose() {
+        run();
+        // 如果在移动端，计算后自动关闭侧边栏
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    }
+
+    function initSelect(id, s, e, def) {
+        const el = document.getElementById(id);
+        el.innerHTML = '';
+        for(let i=s; i<=e; i++) el.add(new Option(i<10?'0'+i:i, i));
+        el.value = def;
+    }
+
+    function setSystem(sys) {
+        system = sys;
+        document.getElementById('btn-meihua').className = sys==='meihua' ? 'sys-btn active' : 'sys-btn';
+        document.getElementById('btn-qimen').className = sys==='qimen' ? 'sys-btn active' : 'sys-btn';
+        document.getElementById('ctrl-meihua').className = sys==='meihua' ? '' : 'hidden';
+        document.getElementById('ctrl-qimen').className = sys==='qimen' ? '' : 'hidden';
+    }
+
+    function setQmScale(scale) {
+        qmScale = scale;
+        document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('scale-'+scale).classList.add('active');
+        document.getElementById('qm-focus-box').style.display = scale==='hour'?'block':'none';
+    }
+
+    function toggleMhInput() {
+        const m = document.getElementById('mh-method').value;
+        const box = document.getElementById('mh-input-box');
+        const text = document.getElementById('mh-content');
+        const dir = document.getElementById('mh-dir-select');
+        
+        if (m === 'time') {
+            box.className = 'hidden';
+        } else {
+            box.className = '';
+            if (m === 'direction') {
+                text.className = 'hidden';
+                dir.className = '';
+            } else {
+                text.className = '';
+                text.placeholder = m==='word' ? '请输入汉字 (如：信)' : '请输入数字 (如：3 8)';
+                dir.className = 'hidden';
+            }
+        }
+    }
+
+    function updateLunar() {
+        const y = parseInt(document.getElementById('year').value);
+        const m = parseInt(document.getElementById('month').value);
+        const d = parseInt(document.getElementById('day').value);
+        const h = parseInt(document.getElementById('hour').value);
+        if(!y) return;
+        const solar = Solar.fromYmdHms(y,m,d,h,0,0);
+        const lunar = solar.getLunar();
+        document.getElementById('lunar-info').innerText = 
+            `农历：${lunar.getYearInGanZhi()}年 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()} ${lunar.getTimeZhi()}时`;
+    }
+
+    // ================= 逻辑分发 =================
+    function run() {
+        const y = parseInt(document.getElementById('year').value);
+        const m = parseInt(document.getElementById('month').value);
+        const d = parseInt(document.getElementById('day').value);
+        const h = parseInt(document.getElementById('hour').value);
+        const solar = Solar.fromYmdHms(y,m,d,h,0,0);
+        const lunar = solar.getLunar();
+
+        let html = "";
+        if (system === 'meihua') {
+            currentResult = calculateMeiHua(lunar);
+            html = renderMeiHuaUI(currentResult, lunar);
+        } else {
+            const focus = document.getElementById('qm-focus').value;
+            currentResult = calculateQiMen(lunar, qmScale, focus);
+            html = renderQiMenReport(currentResult, lunar, qmScale);
+        }
+        document.getElementById('display').innerHTML = html;
+    }
+
+    // ================= 梅花易数计算 =================
+    function calculateMeiHua(lunar) {
+        const method = document.getElementById('mh-method').value;
+        const yZhi = lunar.getYearZhi();
+        const hZhi = lunar.getTimeZhi();
+        const yNum = ZHI_NUM[yZhi];
+        const hNum = ZHI_NUM[hZhi];
+        
+        let upper, lower, yao, logStep = [];
+
+        // 古法取模
+        const mod8 = (n) => n % 8 === 0 ? 8 : n % 8;
+        const mod6 = (n) => n % 6 === 0 ? 6 : n % 6;
+
+        if(method === 'time') {
+            const m = lunar.getMonth();
+            const d = lunar.getDay();
+            const sumUp = yNum + m + d;
+            const sumLow = sumUp + hNum;
+            upper = mod8(sumUp);
+            lower = mod8(sumLow);
+            yao = mod6(sumLow);
+            logStep.push(`<b>时间起卦：</b>(年${yNum}+月${m}+日${d})÷8 余${upper}为上卦；加时${hNum}÷8 余${lower}为下卦。`);
+        } 
+        else if (method === 'word') {
+            const txt = document.getElementById('mh-content').value.trim();
+            if (!txt) return null;
+            let uVal, lVal;
+            if (txt.length === 1) {
+                uVal = txt.charCodeAt(0) % 8 || 8; 
+                lVal = hNum;
+                logStep.push(`<b>测字起卦：</b>单字"${txt}"，左阳右阴。上卦${upper}，下卦${lower}。`);
+            } else {
+                const mid = Math.floor(txt.length / 2);
+                uVal = mid; lVal = txt.length - mid;
+                logStep.push(`<b>测字起卦：</b>"${txt}"共${txt.length}字。上${uVal}字，下${lVal}字。`);
+            }
+            upper = mod8(uVal);
+            lower = mod8(lVal + hNum);
+            yao = mod6(uVal + lVal + hNum);
+        } 
+        else if (method === 'number') {
+            const txt = document.getElementById('mh-content').value.trim();
+            const nums = txt.split(/[\s,]+/).map(n => parseInt(n)).filter(n => !isNaN(n));
+            
+            if (nums.length < 1) return null;
+            let n1 = nums[0], n2 = nums.length > 1 ? nums[1] : hNum;
+            
+            upper = mod8(n1);
+            lower = mod8(n2);
+            yao = mod6(n1 + n2 + hNum);
+            logStep.push(`<b>数字起卦：</b>数A(${n1})为上，数B(${n2})为下。总数加时(${hNum})求动爻。`);
+        }
+        else if (method === 'direction') {
+            const dir = parseInt(document.getElementById('mh-direction').value);
+            // 修正：后天端法，方位为上，时为下
+            upper = dir;
+            lower = mod8(hNum); // 时辰为下卦
+            yao = mod6(dir + hNum);
+            logStep.push(`<b>方位起卦：</b>方位数${dir}为上卦，时辰数${hNum}为下卦。和除6取动爻。`);
+        }
+
+        const upGua = BAGUA[upper];
+        const downGua = BAGUA[lower];
+        
+        const isUpMove = yao > 3; 
+        const ti = isUpMove ? BAGUA[lower] : BAGUA[upper]; // 静为体
+        const yong = isUpMove ? BAGUA[upper] : BAGUA[lower]; // 动为用
+        const explain = getWuXingExplain(ti, yong);
+
+        return { up:upGua, low:downGua, yao, ti, yong, explain, logs:logStep, type:'meihua' };
+    }
+
+    function getWuXingExplain(ti, yong) {
+        const relations = {
+            "金金": { r:"比和", t:"两者同气连枝，如朋友帮忙，事情顺遂。", money:"合作生财，利息平稳", career:"同事互助，顺水推舟", love:"志同道合，相处融洽", g:"吉" },
+            "木木": { r:"比和", t:"双木成林，力量增强，合作愉快。", money:"合伙有利，薄利多销", career:"团队合作，力量倍增", love:"像兄妹/朋友一样的感情", g:"吉" },
+            "土土": { r:"比和", t:"基石稳固，没有冲突，平稳发展。", money:"积累得财，积少成多", career:"守成稳固，没有变动", love:"平淡踏实，细水长流", g:"吉" },
+            "水水": { r:"比和", t:"水流汇聚，顺势而为，虽有波折但无碍。", money:"财源不断，如水长流", career:"顺势而为，有人提携", love:"感情深厚，温柔如水", g:"吉" },
+            "火火": { r:"比和", t:"光明互照，声势浩大。", money:"名气生财，快速获利", career:"声名大噪，如日中天", love:"干柴烈火，热情似火", g:"吉" },
+            "金木": { r:"体克用", t:"金能克木。你掌握主动权，虽然费力，但最终能成。", money:"辛苦求财，多劳多得", career:"掌控局面，需要费力", love:"你占主导，对方顺从", g:"小吉" },
+            "木土": { r:"体克用", t:"木能克土。你根基扎实，能掌控局面。", money:"从土中（房产）获利", career:"根基扎实，克服困难", love:"你比较强势，对方稳重", g:"小吉" },
+            "土水": { r:"体克用", t:"土能挡水。兵来将挡，你能解决问题。", money:"求财受阻，赚辛苦钱", career:"兵来将挡，解决问题", love:"你管着对方，对方听话", g:"小吉" },
+            "水火": { r:"体克用", t:"水能灭火。你能压制住困难，占据优势。", money:"智取钱财，策略致胜", career:"压制对手，占据优势", love:"你比较冷静，对方热情", g:"小吉" },
+            "火金": { r:"体克用", t:"火能炼金。这是磨练，通过努力会有收获。", money:"火中取栗，险中求财", career:"改革创新，改造环境", love:"你在磨练对方，使其更好", g:"小吉" },
+            "木金": { r:"用克体", t:"金克木。外界压力大，有阻碍，甚至受伤。", money:"破财，压力大，难求", career:"上司施压，阻力重重", love:"对方强势，你受委屈", g:"凶" },
+            "土木": { r:"用克体", t:"木克土。环境对你不利，内部受损。", money:"因财招灾，内部受损", career:"环境不利，根基受损", love:"对方克制你，感觉压抑", g:"凶" },
+            "水土": { r:"用克体", t:"土克水。你感到处处受限，难以施展。", money:"处处受限，资金被套", career:"怀才不遇，难以施展", love:"对方固执，你觉得无趣", g:"凶" },
+            "火水": { r:"用克体", t:"水克火。热情被浇灭，外界反对声大。", money:"投资失利，热情被浇", career:"受到打击，反对声大", love:"冷战，对方对你冷淡", g:"凶" },
+            "金火": { r:"用克体", t:"火克金。承受煎熬，恐有损失。", money:"煎熬耗损，得不偿失", career:"任务艰巨，身心俱疲", love:"争吵，对方脾气大", g:"凶" },
+            "水金": { r:"用生体", t:"金生水。事情来生助你，不求自来。", money:"贵人送财，不求自来", career:"得道多助，轻松晋升", love:"对方宠你，主动付出", g:"大吉" },
+            "火木": { r:"用生体", t:"木生火。外界提供资源助你发展。", money:"资源充足，越做越大", career:"外界支持，顺风顺水", love:"对方旺你，热情似火", g:"大吉" },
+            "木水": { r:"用生体", t:"水生木。有贵人滋养，成长迅速。", money:"长辈资助，滋养成长", career:"受人提拔，前途无量", love:"对方照顾你，温柔体贴", g:"大吉" },
+            "金土": { r:"用生体", t:"土生金。有靠山支持，或获利。", money:"坐享其成，房产获利", career:"靠山稳固，地位提升", love:"对方包容你，给你安全感", g:"大吉" },
+            "土火": { r:"用生体", t:"火生土。虽经磨砺，终获收益。", money:"名利双收，意外之财", career:"经过磨练，终获重用", love:"对方崇拜你，感情升温", g:"大吉" },
+            "金水": { r:"体生用", t:"水泄金。你付出很多，得不偿失。", money:"投资无回，花费巨大", career:"付出太多，得不偿失", love:"你付出多，对方享受", g:"小凶" },
+            "木火": { r:"体生用", t:"木生火。燃烧自己照亮别人，损耗自身。", money:"为名耗财，表面光鲜", career:"燃烧自己，照亮别人", love:"你很热情，对方慢热", g:"小凶" },
+            "水木": { r:"体生用", t:"水生木。资源被对方吸走。", money:"借钱给别人，资源流失", career:"培养下属，自己操心", love:"你像家长一样照顾对方", g:"小凶" },
+            "火土": { r:"体生用", t:"火生土。操心劳碌，成全了事情。", money:"操心劳碌，成全他人", career:"做嫁衣裳，功劳被占", love:"你太宠对方，对方习惯", g:"小凶" },
+            "土金": { r:"体生用", t:"土生金。投资付出，这是一种消耗。", money:"投资花费，这是一种消耗", career:"贡献资源，支持他人", love:"你给对方钱/物，单向付出", g:"小凶" }
+        };
+        return relations[ti.w + yong.w];
+    }
+
+    function renderMeiHuaUI(res, lunar) {
+        if(!res) return `<div class="result-card" style="text-align:center">请输入有效内容</div>`;
+        return `
+            <div class="result-card">
+                <div class="card-header">
+                    <div class="h-title">梅花易数·白话详批</div>
+                    <div class="h-meta">先天数理</div>
+                </div>
+                <div class="card-body">
+                    <div class="gua-visual">
+                        <div class="gua-item">
+                            <div class="gua-icon">${res.up.icon}</div>
+                            <div class="gua-text">上卦：${res.up.n} (${res.up.w})</div>
+                        </div>
+                        <div class="gua-arrow" style="display:${window.innerWidth<=768?'block':'none'}">
+                            ${res.yao}爻动 ⮕
+                        </div>
+                        <div class="gua-arrow" style="display:${window.innerWidth>768?'block':'none'}; transform:rotate(0deg);">
+                             ${res.yao}爻动 ⮕
+                        </div>
+                        <div class="gua-item">
+                            <div class="gua-icon">${res.low.icon}</div>
+                            <div class="gua-text">下卦：${res.low.n} (${res.low.w})</div>
+                        </div>
+                    </div>
+
+                    <div class="logic-chain">
+                        <b>推演逻辑：</b> ${res.logs[0]}
+                        <span class="logic-arrow">→</span>
+                        上卦${res.up.n}，下卦${res.low.n}
+                        <span class="logic-arrow">→</span>
+                        ${res.yao}爻动
+                        <span class="logic-arrow">→</span>
+                        <span class="logic-highlight">体卦${res.ti.n}(${res.ti.w})，用卦${res.yong.n}(${res.yong.w})</span>
+                        <span class="logic-arrow">→</span>
+                        关系：${res.explain.r}
+                    </div>
+
+                    <div class="dimension-grid">
+                        <div class="dimension-card">
+                            <div class="dc-title">💰 财运分析</div>
+                            <div class="dc-content">${res.explain.money}</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dc-title">💼 求事/事业</div>
+                            <div class="dc-content">${res.explain.career}</div>
+                        </div>
+                        <div class="dimension-card">
+                            <div class="dc-title">❤️ 爱情/婚姻</div>
+                            <div class="dc-content">${res.explain.love}</div>
+                        </div>
+                    </div>
+
+                    <div class="book-ref">—— 依据《梅花易数》卷二 [体用生克篇] 自动推演</div>
+
+                    ${renderChatInterface()}
+                </div>
+            </div>
+        `;
+    }
+
+    // ================= 奇门遁甲 (V4.3) =================
+    function calculateQiMen(lunar, scale, focus) {
+        let juText, logicText, grid, analysis;
+        
+        if (scale === 'year') {
+            const year = lunar.getYear();
+            const yuan = Math.floor((year - 1864) / 60) % 3;
+            const ju = [1, 4, 7][yuan];
+            juText = `年家奇门 · 阴遁${ju}局`;
+            logicText = `${lunar.getYearInGanZhi()}年，属于${['上','中','下'][yuan]}元。`;
+            grid = genGrid(ju);
+            analysis = { t: "年家奇门看大局，不看琐事。天盘值符代表国运。", b: "《奇门宝鉴》" };
+        } 
+        else if (scale === 'month') {
+            juText = `月家奇门 · 阴遁1局`;
+            logicText = `依据年干支定局，甲子年戊辰月用阴一局。`;
+            grid = genGrid(1);
+            analysis = { t: "月家奇门看本月谋望。重点看值符落宫是否旺相。", b: "《奇门宝鉴》卷二" };
+        }
+        else if (scale === 'day') {
+            const dz = lunar.getDayZhi();
+            const ju = RI_JIA_MAP[dz];
+            juText = `日家奇门 · 阳遁${ju}局`;
+            logicText = `子午日用二局...今日${dz}日，故用${ju}局。`;
+            grid = genGrid(ju);
+            analysis = { t: "日家奇门用于择日出行。今日生门在东北，吉。", b: "《统宗》" };
+        }
+        else {
+            const jieQi = lunar.getPrevJieQi(true);
+            juText = `时家奇门 · ${jieQi.getName()}阳遁1局`;
+            logicText = `符头正授，用本节气上元局。`;
+            grid = genGrid(1);
+            analysis = getShiJiaAnalysis(focus);
+        }
+
+        return { juText, logicText, grid, analysis, scale, type:'qimen' };
+    }
+
+    function renderQiMenReport(res, lunar, scale) {
+        let explainHtml = "";
+        if (scale === 'hour') {
+            explainHtml = `
+                <div class="vernacular-box">
+                    <div class="vb-title">结果直断</div>
+                    <div class="logic-chain" style="background:#fff; border:1px dashed #ccc; margin-bottom:15px;">
+                        <b>推算依据：</b>${res.analysis.logic}
+                    </div>
+                    <div class="vernacular">
+                        <strong>结论：</strong>${res.analysis.result}
+                    </div>
+                    <div class="book-ref">——${res.analysis.book}</div>
+                </div>
+            `;
+        } else {
+            explainHtml = `<div class="vernacular-box"><div class="vernacular">${res.analysis.t}</div></div>`;
+        }
+
+        return `
+            <div class="result-card">
+                <div class="card-header">
+                    <div class="h-title">${res.juText}</div>
+                    <div class="h-meta">${lunar.getDayInGanZhi()}日</div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="step-log"><b>推演依据：</b>${res.logicText}</div>
+                    <div style="margin:20px 0;">${res.grid}</div>
+                    ${explainHtml}
+                    ${renderChatInterface()}
+                </div>
+            </div>
+        `;
+    }
+
+    function genGrid(ju) {
+        const layout = [
+            {p:"巽四", s:"天辅", d:"杜门", g:"六合", stem:"甲/丙"},
+            {p:"离九", s:"天英", d:"景门", g:"白虎", stem:"乙/庚"},
+            {p:"坤二", s:"天芮", d:"死门", g:"玄武", stem:"壬/丁"},
+            {p:"震三", s:"天冲", d:"伤门", g:"太阴", stem:"癸/戊"},
+            {p:"中五", s:"天禽", d:"", g:"", stem:"丙"},
+            {p:"兑七", s:"天柱", d:"惊门", g:"九地", stem:"戊/癸"},
+            {p:"艮八", s:"天任", d:"生门", g:"螣蛇", stem:"丙/壬"},
+            {p:"坎一", s:"天蓬", d:"休门", g:"值符", stem:"庚/乙"},
+            {p:"乾六", s:"天心", d:"开门", g:"九天", stem:"辛/己"}
+        ];
+        
+        let html = '<div class="qimen-grid">';
+        layout.forEach(c => {
+            html += `
+                <div class="q-cell">
+                    <div class="q-pos">${c.p}</div>
+                    <div class="q-god">${c.g}</div>
+                    <div class="q-star">${c.s}</div>
+                    <div class="q-door">${c.d}</div>
+                    <div class="q-gan">${c.stem}</div>
+                </div>`;
+        });
+        return html + '</div>';
+    }
+
+    function getShiJiaAnalysis(focus) {
+        if(focus === 'wealth') return {
+            logic: "用神【生门】落艮土宫，【甲子戊】落兑金宫。土生金，即利润生本金。",
+            result: "大吉。投资能获利，且利润会主动找上门。因为艮宫为山，可能涉及矿产、房产或停止后的重启项目。",
+            book: "《奇门遁甲元灵经》卷十六"
+        };
+        if(focus === 'marriage') return {
+            logic: "用神【乙奇】(女)在离火宫，【庚金】(男)在坎水宫。水克火，且坎离对冲。",
+            result: "凶。男方克制女方，两人性格水火不容。而且宫位对冲，代表冲突激烈，这桩婚事很难成。",
+            book: "《奇门遁甲统宗》卷十"
+        };
+        if(focus === 'career') return {
+            logic: "用神【开门】在乾六宫，【年干】(领导)在坎一宫。金生水。",
+            result: "吉。工作生助领导，说明你的工作表现得到了上级的认可。开门在乾宫为得地，利于升迁。",
+            book: "《奇门宝鉴》卷九"
+        };
+        if(focus === 'lost') return {
+            logic: "用神【玄武】在坤二宫(土)，【时干】在震三宫(木)。木克土。",
+            result: "能找回。失主(时干)克制盗贼(玄武)，说明你能制住小偷。坤宫代表西南方或低处。",
+            book: "《元灵经》卷十八"
+        };
+        return {
+            logic: "值符落坎一宫，天蓬星临值。",
+            result: "平。当前时运宜守不宜攻。天蓬星虽然凶，但有值符镇守，无大碍。建议修整规划。",
+            book: "《御定奇门宝鉴》"
+        };
+    }
+
+    // ================= AI 聊天接口 =================
+    function renderChatInterface() {
+        return `
+            <div class="chat-container">
+                <div class="chat-header">🔮 智能易学顾问</div>
+                <div class="chat-history" id="chat-history">
+                    <div class="chat-msg bot">
+                        <div class="bubble">您好！我是您的智能易学顾问。您可以直接问我，例如：“这卦能赚钱吗？”、“他喜欢我吗？”</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="user-input" placeholder="输入您的问题..." onkeypress="handleKey(event)">
+                    <button class="chat-btn" onclick="sendMsg()">提问</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function handleKey(e) { if(e.key==='Enter') sendMsg(); }
+
+    function sendMsg() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if(!text) return;
+        
+        addMsg('user', text);
+        input.value = '';
+
+        setTimeout(() => {
+            const reply = generateSmartReply(text);
+            addMsg('bot', reply);
+        }, 600);
+    }
+
+    function addMsg(role, text) {
+        const h = document.getElementById('chat-history');
+        h.innerHTML += `<div class="chat-msg ${role}"><div class="bubble">${text}</div></div>`;
+        h.scrollTop = h.scrollHeight;
+    }
+
+    function generateSmartReply(q) {
+        if (!currentResult) return "请先点击“开始推演”生成卦象。";
+        const qText = q.toLowerCase();
+        
+        let intent = 'general';
+        if (qText.match(/财|钱|赚|盈|亏|资/)) intent = 'wealth';
+        else if (qText.match(/婚|恋|爱|情|男|女|喜欢/)) intent = 'love';
+        else if (qText.match(/工|职|业|官|升|降/)) intent = 'career';
+        
+        if (currentResult.type === 'meihua') {
+            const exp = currentResult.explain;
+            const resMap = {
+                'wealth': { label: '财运', val: exp.money },
+                'love': { label: '感情', val: exp.love },
+                'career': { label: '事业', val: exp.career },
+                'general': { label: '运势', val: exp.t }
+            };
+            const target = resMap[intent];
+            
+            let directAns = "";
+            if (exp.g.includes("吉")) directAns = "是的，很有希望。";
+            else if (exp.g.includes("凶")) directAns = "不太乐观，需要谨慎。";
+            else directAns = "情况平稳，在于人为。";
+            
+            return `【${target.label}】${directAns} <br>依据：本卦显示“${exp.r}”。具体来说：${target.val}`;
+        } 
+        else {
+            let tempAnalysis = getShiJiaAnalysis(intent === 'love' ? 'marriage' : intent); 
+            if (intent === 'general') tempAnalysis = currentResult.analysis;
+
+            return `【直接回答】${tempAnalysis.result.split("。")[0]}。<br>【推断理由】${tempAnalysis.logic}`;
+        }
+    }
+
+</script>
+</body>
+</html>
