@@ -1,903 +1,381 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI玄学</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Serif SC', serif;
-            background-color: #f4f1ea;
-            color: #2c2c2c;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9IiNjY2MiIG9wYWNpdHk9IjAuMiIvPjwvc3ZnPg==');
-        }
-        .title-font { font-family: 'Ma Shan Zheng', cursive; }
-        .header-cell {
-            background-color: #e8e0c9;
-            font-weight: bold;
-            color: #5d4037;
-            padding: 8px;
-            border-bottom: 2px solid #8c8c8c;
-            border-right: 1px solid #dcdcdc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .data-cell {
-            padding: 6px;
-            text-align: center;
-            border-bottom: 1px solid #dcdcdc;
-            border-right: 1px solid #eee;
-            font-size: 0.95rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .stem-text { font-weight: bold; font-size: 1.6rem; font-family: 'Ma Shan Zheng'; }
-        .branch-text { font-weight: bold; font-size: 1.6rem; font-family: 'Ma Shan Zheng'; }
-        .section-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid #e0e0e0;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-        }
-        
-        /* 布局 Grid 定义 */
-        .bazi-table {
-            display: grid;
-            grid-template-columns: 80px repeat(4, 1fr);
-            border: 2px solid #5d4037;
-            background-color: #fffbf0;
-        }
-        /* 维度标题列 */
-        .row-title {
-            background-color: #d6d3c9;
-            font-weight: bold;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 1px solid #b0b0b0;
-            border-right: 1px solid #5d4037;
-            color: #4a4a4a;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>华东师范大学智慧教育产教基地</title>
+  <meta name="description" content="华东师范大学智慧教育产教基地：聚焦人工智能与教育融合的人才培养、产业协同与成果转化平台。" />
+  <style>
+    :root {
+      --primary: #8c1515;
+      --secondary: #005b96;
+      --light: #f6f9fc;
+      --text: #1f2d3d;
+      --muted: #5b6b7b;
+    }
 
-        /* 胶囊标签 */
-        .tag-pill {
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            margin: 1px;
-            white-space: nowrap;
-        }
-        .tag-good { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .tag-bad { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        .tag-neutral { background-color: #f3f4f6; color: #4b5563; border: 1px solid #e5e7eb; }
-    </style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: #fff;
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e8edf2;
+      z-index: 50;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), #b63d3d);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .hero {
+      background: linear-gradient(160deg, #fff 0%, #f9fbff 45%, #eef4ff 100%);
+      padding: 72px 0 64px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 16px;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 26px;
+    }
+
+    .tag {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #edf4ff;
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .btns {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: #740f0f; }
+
+    .btn-secondary {
+      border-color: #d5dce5;
+      color: #334155;
+      background: #fff;
+    }
+
+    .stats {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e6edf5;
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(13, 34, 66, 0.06);
+    }
+
+    .stat-num {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 6px 0;
+    }
+
+    section {
+      padding: 62px 0;
+    }
+
+    .section-title {
+      font-size: 28px;
+      margin: 0 0 8px;
+    }
+
+    .section-desc {
+      margin: 0 0 28px;
+      color: var(--muted);
+    }
+
+    .grid-3 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid-2 {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .muted-bg {
+      background: var(--light);
+      border-top: 1px solid #eaf0f6;
+      border-bottom: 1px solid #eaf0f6;
+    }
+
+    .news-date {
+      font-size: 13px;
+      color: #6c7a89;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      background: #0f172a;
+      color: #dbe4f2;
+      padding: 32px 0;
+      font-size: 14px;
+    }
+
+    .footer-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .grid-3,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links { display: none; }
+    }
+  </style>
 </head>
-<body class="p-2 md:p-8 max-w-7xl mx-auto">
-
-    <!-- 头部 -->
-    <header class="text-center mb-8">
-        <h1 class="title-font text-5xl text-red-900 mb-2">随便玩玩不能当真</h1>
-        <p class="text-gray-600 tracking-widest text-sm">我吃了《渊海子平》《子平真诠》《千里命稿》《穷通宝鉴》《三命通会》《滴天髓-原文》《滴天髓阐微》《神峰通考》《命理探源》《李虚中命书》《五行大义》《玉照定真经》《鬼谷遗文》《星平会海》《子平管见》《星命抉古录》《月谈赋》你懂不懂？</p>
-    </header>
-
-    <!-- 输入区 -->
-    <div class="section-card mx-auto max-w-4xl" id="input-area">
-        <h2 class="text-xl font-bold mb-4 border-l-4 border-red-800 pl-3">请输入生辰信息</h2>
-        <form id="bazi-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-                <label class="block text-sm font-bold mb-1 text-gray-700">姓名</label>
-                <input type="text" id="name" class="w-full border p-2 rounded bg-gray-50 focus:ring-2 ring-red-200 outline-none" placeholder="某某某">
-            </div>
-            <div>
-                <label class="block text-sm font-bold mb-1 text-gray-700">性别</label>
-                <select id="gender" class="w-full border p-2 rounded bg-gray-50 outline-none">
-                    <option value="1">男 (乾造)</option>
-                    <option value="0">女 (坤造)</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-bold mb-1 text-gray-700">公历生日</label>
-                <input type="date" id="birthDate" class="w-full border p-2 rounded bg-gray-50 outline-none">
-            </div>
-            <div>
-                <label class="block text-sm font-bold mb-1 text-gray-700">出生时间</label>
-                <input type="time" id="birthTime" class="w-full border p-2 rounded bg-gray-50 outline-none">
-            </div>
-            <div class="md:col-span-2 lg:col-span-3 text-center mt-4">
-                <button type="submit" class="bg-red-900 text-white font-bold py-3 px-10 rounded shadow-lg hover:bg-red-800 transition transform hover:scale-105">
-                    排 盘 详 批
-                </button>
-            </div>
-         </form>
-        <div class="mt-10 text-center">
-            <button
-                id="btn-project"
-                class="bg-purple-700 text-white text-xl font-bold py-4 px-10 rounded-full shadow-lg 
-                       hover:bg-purple-800 transition transform hover:scale-105"
-            >
-                万事不决 算一卦？
-            </button>
-        </div> <!-- 这是按钮外层的 div -->
-
-    </div> <!-- ⭐ 新增这一行：关闭最上面的 input-area 容器 -->
-
-    <!-- 结果展示区 -->
-    <div id="result-area" class="hidden animate-fade-in space-y-8">
-        
-        <!-- 1. 核心排盘表格 -->
-        <div class="section-card">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b pb-4">
-                <div>
-                    <span id="res-name" class="text-3xl font-bold text-red-900 title-font mr-4"></span>
-                    <span id="res-gender" class="text-lg text-gray-600 font-serif"></span>
-                </div>
-                <div class="text-right text-sm text-gray-500 mt-2 md:mt-0">
-                    <p>公历：<span id="res-solar-date"></span></p>
-                    <p>农历：<span id="res-lunar-date">自动推演中...</span></p>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto pb-4">
-                <!-- Grid 布局 -->
-                <div class="bazi-table min-w-[700px]">
-                    <!-- 表头 -->
-                    <div class="row-title bg-gray-200">四柱</div>
-                    <div class="header-cell">年柱 (根) <span class="text-xs font-normal block text-gray-500 ml-1">1-16岁</span></div>
-                    <div class="header-cell">月柱 (苗) <span class="text-xs font-normal block text-gray-500 ml-1">17-32岁</span></div>
-                    <div class="header-cell bg-red-50 text-red-900">日柱 (花) <span class="text-xs font-normal block text-red-400 ml-1">33-48岁</span></div>
-                    <div class="header-cell">时柱 (果) <span class="text-xs font-normal block text-gray-500 ml-1">49-晚年</span></div>
-
-                    <!-- 主星 -->
-                    <div class="row-title">主星<br>(十神)</div>
-                    <div id="god-year" class="data-cell font-bold text-gray-600"></div>
-                    <div id="god-month" class="data-cell font-bold text-gray-600"></div>
-                    <div class="data-cell font-bold text-red-900 bg-red-50">日元 (我)</div>
-                    <div id="god-hour" class="data-cell font-bold text-gray-600"></div>
-
-                    <!-- 天干 -->
-                    <div class="row-title">天干</div>
-                    <div id="stem-year" class="data-cell stem-text"></div>
-                    <div id="stem-month" class="data-cell stem-text"></div>
-                    <div id="stem-day" class="data-cell stem-text bg-red-50 text-red-700"></div>
-                    <div id="stem-hour" class="data-cell stem-text"></div>
-
-                    <!-- 地支 -->
-                    <div class="row-title">地支</div>
-                    <div id="branch-year" class="data-cell branch-text"></div>
-                    <div id="branch-month" class="data-cell branch-text"></div>
-                    <div id="branch-day" class="data-cell branch-text bg-red-50"></div>
-                    <div id="branch-hour" class="data-cell branch-text"></div>
-
-                    <!-- 藏干 -->
-                    <div class="row-title">藏干</div>
-                    <div id="hidden-year" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="hidden-month" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="hidden-day" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="hidden-hour" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-
-                    <!-- 副星 -->
-                    <div class="row-title">副星</div>
-                    <div id="subgod-year" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="subgod-month" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="subgod-day" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-                    <div id="subgod-hour" class="data-cell text-xs text-gray-500 leading-relaxed"></div>
-
-                    <!-- 星运 (十二长生) -->
-                    <div class="row-title">星运</div>
-                    <div id="luck-year" class="data-cell text-sm"></div>
-                    <div id="luck-month" class="data-cell text-sm"></div>
-                    <div id="luck-day" class="data-cell text-sm font-bold"></div>
-                    <div id="luck-hour" class="data-cell text-sm"></div>
-
-                    <!-- 自坐 -->
-                    <div class="row-title">自坐</div>
-                    <div id="zizuo-year" class="data-cell text-xs text-gray-500"></div>
-                    <div id="zizuo-month" class="data-cell text-xs text-gray-500"></div>
-                    <div id="zizuo-day" class="data-cell text-xs text-gray-500 font-bold"></div>
-                    <div id="zizuo-hour" class="data-cell text-xs text-gray-500"></div>
-
-                    <!-- 空亡 -->
-                    <div class="row-title">空亡</div>
-                    <div id="kongwang-year" class="data-cell text-sm"></div>
-                    <div id="kongwang-month" class="data-cell text-sm"></div>
-                    <div id="kongwang-day" class="data-cell text-sm text-gray-300">-</div>
-                    <div id="kongwang-hour" class="data-cell text-sm"></div>
-
-                    <!-- 纳音 -->
-                    <div class="row-title">纳音</div>
-                    <div id="nayin-year" class="data-cell text-xs text-gray-600"></div>
-                    <div id="nayin-month" class="data-cell text-xs text-gray-600"></div>
-                    <div id="nayin-day" class="data-cell text-xs text-gray-600"></div>
-                    <div id="nayin-hour" class="data-cell text-xs text-gray-600"></div>
-
-                    <!-- 神煞 -->
-                    <div class="row-title">神煞</div>
-                    <div id="shensha-year" class="data-cell text-xs flex flex-wrap gap-1 content-center justify-center p-2"></div>
-                    <div id="shensha-month" class="data-cell text-xs flex flex-wrap gap-1 content-center justify-center p-2"></div>
-                    <div id="shensha-day" class="data-cell text-xs flex flex-wrap gap-1 content-center justify-center p-2"></div>
-                    <div id="shensha-hour" class="data-cell text-xs flex flex-wrap gap-1 content-center justify-center p-2"></div>
-                </div>
-            </div>
-            
-            <div class="mt-4 flex justify-center space-x-8 text-sm text-gray-700 bg-gray-50 p-3 rounded">
-                <div><span class="font-bold">胎元：</span><span id="taiyuan-text">--</span></div>
-                <div><span class="font-bold">命宫：</span><span id="minggong-text">--</span></div>
-                <div><span class="font-bold">旬首：</span><span id="xunshou-text">--</span></div>
-            </div>
-        </div>
-
-        <!-- 2. 五行旺衰与通俗建议 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="section-card">
-                <h3 class="text-xl font-bold mb-4 border-l-4 border-blue-800 pl-3">五行能量与补运建议</h3>
-                <div class="h-64 w-full relative">
-                    <canvas id="wuxingChart"></canvas>
-                </div>
-                <!-- 能量条展示 -->
-                <div class="grid grid-cols-5 gap-1 mt-4 text-center text-xs">
-                    <div class="p-1 rounded bg-green-100 text-green-900 border border-green-200">木: <span id="score-wood">0</span></div>
-                    <div class="p-1 rounded bg-red-100 text-red-900 border border-red-200">火: <span id="score-fire">0</span></div>
-                    <div class="p-1 rounded bg-yellow-100 text-yellow-900 border border-yellow-200">土: <span id="score-earth">0</span></div>
-                    <div class="p-1 rounded bg-gray-100 text-gray-800 border border-gray-300">金: <span id="score-metal">0</span></div>
-                    <div class="p-1 rounded bg-blue-100 text-blue-900 border border-blue-200">水: <span id="score-water">0</span></div>
-                </div>
-
-                <div class="mt-6">
-                    <h4 class="font-bold text-lg text-gray-800 mb-2">💡 您的补运指南 (通俗版)</h4>
-                    <div id="vernacular-advice" class="text-sm text-gray-700 space-y-3 leading-relaxed bg-gray-50 p-4 rounded border border-gray-200">
-                        <!-- JS 注入 -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-card flex flex-col">
-                <h3 class="text-xl font-bold mb-4 border-l-4 border-purple-800 pl-3">格局与阴阳分析</h3>
-                
-                <div class="mb-6">
-                    <div class="flex items-center mb-2">
-                        <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-bold mr-3">本命格局</span>
-                        <span id="pattern-name" class="text-2xl font-bold text-gray-800 title-font"></span>
-                    </div>
-                    <p id="pattern-desc" class="text-sm text-gray-600 italic border-l-2 border-gray-300 pl-3 py-1"></p>
-                </div>
-
-                <div class="space-y-4 flex-grow">
-                    <div class="bg-white border border-gray-200 p-4 rounded shadow-sm">
-                        <strong class="text-gray-800 block mb-1">☯️ 阴阳参考 (大白话)</strong>
-                        <p id="yinyang-text" class="text-sm text-gray-600 leading-relaxed"></p>
-                    </div>
-                    <div class="bg-white border border-gray-200 p-4 rounded shadow-sm">
-                        <strong class="text-gray-800 block mb-1">💪 身强身弱 (大白话)</strong>
-                        <p id="strength-text" class="text-sm text-gray-600 leading-relaxed"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. 四柱流年一生详批 -->
-        <div class="section-card">
-            <h3 class="text-2xl font-bold text-center mb-10 title-font text-red-900">四柱流年 · 一生详批</h3>
-            
-            <div class="space-y-10">
-                <!-- 根：年柱 -->
-                <div class="flex gap-4">
-                    <div class="hidden md:flex flex-col items-center min-w-[80px]">
-                        <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-2xl">🌱</div>
-                        <div class="h-full w-0.5 bg-gray-200 mt-2"></div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-gray-800">第一阶段：根基 (1-16岁 少年)</h4>
-                        <div class="text-xs text-gray-500 mb-2">对应参数：年柱 <span id="ref-year"></span></div>
-                        <div id="detail-year" class="text-gray-700 text-sm leading-7 text-justify bg-gray-50 p-4 rounded border-l-4 border-gray-400"></div>
-                    </div>
-                </div>
-
-                <!-- 苗：月柱 -->
-                <div class="flex gap-4">
-                    <div class="hidden md:flex flex-col items-center min-w-[80px]">
-                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl text-green-700">🌿</div>
-                        <div class="h-full w-0.5 bg-gray-200 mt-2"></div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-gray-800">第二阶段：成长 (17-32岁 青年)</h4>
-                        <div class="text-xs text-gray-500 mb-2">对应参数：月柱 <span id="ref-month"></span></div>
-                        <div id="detail-month" class="text-gray-700 text-sm leading-7 text-justify bg-green-50 p-4 rounded border-l-4 border-green-400"></div>
-                    </div>
-                </div>
-
-                <!-- 花：日柱 -->
-                <div class="flex gap-4">
-                    <div class="hidden md:flex flex-col items-center min-w-[80px]">
-                        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-2xl text-red-700">🌺</div>
-                        <div class="h-full w-0.5 bg-gray-200 mt-2"></div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-gray-800">第三阶段：盛开 (33-48岁 中年)</h4>
-                        <div class="text-xs text-gray-500 mb-2">对应参数：日柱 <span id="ref-day"></span></div>
-                        <div id="detail-day" class="text-gray-700 text-sm leading-7 text-justify bg-red-50 p-4 rounded border-l-4 border-red-400"></div>
-                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="p-3 bg-white border border-pink-200 rounded shadow-sm">
-                                <strong class="text-pink-700 block text-sm mb-1">❤️ 婚姻感情</strong>
-                                <p id="marriage-advice" class="text-xs text-gray-600"></p>
-                            </div>
-                            <div class="p-3 bg-white border border-blue-200 rounded shadow-sm">
-                                <strong class="text-blue-700 block text-sm mb-1">💼 事业方向</strong>
-                                <p id="career-advice" class="text-xs text-gray-600"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 果：时柱 -->
-                <div class="flex gap-4">
-                    <div class="hidden md:flex flex-col items-center min-w-[80px]">
-                        <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-2xl text-yellow-700">🍎</div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-gray-800">第四阶段：结果 (49岁后 晚年)</h4>
-                        <div class="text-xs text-gray-500 mb-2">对应参数：时柱 <span id="ref-hour"></span></div>
-                        <div id="detail-hour" class="text-gray-700 text-sm leading-7 text-justify bg-yellow-50 p-4 rounded border-l-4 border-yellow-400"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-           <div class="text-center pb-12">
-            <button
-                id="btn-recalc"
-                class="bg-gray-800 text-white px-6 py-2 rounded shadow hover:bg-gray-700 transition"
-            >
-                🔁 返回重算
-            </button>
-        </div>
-        
-        <div class="text-center pb-12 text-gray-400 text-xs">
-            <p>※ 命理建议仅供参考，积善之家必有余庆，命运掌握在自己手中 ※</p>
-        </div>
-
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#top">
+        <span class="logo">ECNU</span>
+        <span>华东师范大学智慧教育产教基地</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#about">基地介绍</a>
+        <a href="#program">核心项目</a>
+        <a href="#news">基地动态</a>
+        <a href="#contact">合作联系</a>
+      </nav>
     </div>
+  </header>
 
-    <script>
-        // --- 核心数据库 (Data) ---
-        const GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-        const ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-        const WUXING_MAP = {
-            '甲': 'wood', '乙': 'wood', '寅': 'wood', '卯': 'wood',
-            '丙': 'fire', '丁': 'fire', '巳': 'fire', '午': 'fire',
-            '戊': 'earth', '己': 'earth', '辰': 'earth', '戌': 'earth', '丑': 'earth', '未': 'earth',
-            '庚': 'metal', '辛': 'metal', '申': 'metal', '酉': 'metal',
-            '壬': 'water', '癸': 'water', '亥': 'water', '子': 'water'
-        };
-        const WUXING_CN = {'wood': '木', 'fire': '火', 'earth': '土', 'metal': '金', 'water': '水'};
-        const WUXING_COLORS = {
-            'wood': '#22c55e', 'fire': '#ef4444', 'earth': '#eab308', 'metal': '#9ca3af', 'water': '#1e3a8a'
-        };
-        
-        // 藏干表 (主气, 中气, 余气)
-        const CANG_GAN = {
-            '子': ['癸'], '丑': ['己', '癸', '辛'], '寅': ['甲', '丙', '戊'], '卯': ['乙'],
-            '辰': ['戊', '乙', '癸'], '巳': ['丙', '戊', '庚'], '午': ['丁', '己'], '未': ['己', '丁', '乙'],
-            '申': ['庚', '壬', '戊'], '酉': ['辛'], '戌': ['戊', '辛', '丁'], '亥': ['壬', '甲']
-        };
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>聚焦“人工智能 + 教育”<br />打造产教融合创新高地</h1>
+          <p>
+            华东师范大学智慧教育产教基地围绕“人才培养、技术研发、产业协同、成果转化”四位一体建设，
+            联合高校、企业与政府，推动智慧教育高质量发展。
+          </p>
+          <div class="tags">
+            <span class="tag">示范性教学场景</span>
+            <span class="tag">校企联合实验室</span>
+            <span class="tag">双师型师资建设</span>
+            <span class="tag">AI教育应用孵化</span>
+          </div>
+          <div class="btns">
+            <a href="#contact" class="btn btn-primary">申请合作</a>
+            <a href="#program" class="btn btn-secondary">查看项目</a>
+          </div>
+        </div>
 
-        // 纳音表
-        const NAYIN = {
-            '甲子': '海中金', '乙丑': '海中金', '丙寅': '炉中火', '丁卯': '炉中火', '戊辰': '大林木', '己巳': '大林木',
-            '庚午': '路旁土', '辛未': '路旁土', '壬申': '剑锋金', '癸酉': '剑锋金', '甲戌': '山头火', '乙亥': '山头火',
-            '丙子': '涧下水', '丁丑': '涧下水', '戊寅': '城头土', '己卯': '城头土', '庚辰': '白蜡金', '辛巳': '白蜡金',
-            '壬午': '杨柳木', '癸未': '杨柳木', '甲申': '泉中水', '乙酉': '泉中水', '丙戌': '屋上土', '丁亥': '屋上土',
-            '戊子': '霹雳火', '己丑': '霹雳火', '庚寅': '松柏木', '辛卯': '松柏木', '壬辰': '长流水', '癸巳': '长流水',
-            '甲午': '沙中金', '乙未': '沙中金', '丙申': '山下火', '丁酉': '山下火', '戊戌': '平地木', '己亥': '平地木',
-            '庚子': '壁上土', '辛丑': '壁上土', '壬寅': '金箔金', '癸卯': '金箔金', '甲辰': '覆灯火', '乙巳': '覆灯火',
-            '丙午': '天河水', '丁未': '天河水', '戊申': '大驿土', '己酉': '大驿土', '庚戌': '钗钏金', '辛亥': '钗钏金',
-            '壬子': '桑柘木', '癸丑': '桑柘木', '甲寅': '大溪水', '乙卯': '大溪水', '丙辰': '沙中土', '丁巳': '沙中土',
-            '戊午': '天上火', '己未': '天上火', '庚申': '石榴木', '辛酉': '石榴木', '壬戌': '大海水', '癸亥': '大海水'
-        };
+        <div class="stats">
+          <article class="card">
+            <div>合作企业</div>
+            <div class="stat-num">60+</div>
+            <div class="section-desc">覆盖教育科技、内容平台与智能硬件领域。</div>
+          </article>
+          <article class="card">
+            <div>联合课程</div>
+            <div class="stat-num">40+</div>
+            <div class="section-desc">围绕教育大模型、学习分析与课堂创新。</div>
+          </article>
+          <article class="card">
+            <div>年服务师生</div>
+            <div class="stat-num">12,000+</div>
+            <div class="section-desc">线上线下融合培养多层次人才。</div>
+          </article>
+          <article class="card">
+            <div>成果转化项目</div>
+            <div class="stat-num">25+</div>
+            <div class="section-desc">推动智慧教育场景应用落地与示范。</div>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        // --- 算法函数 ---
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">基地介绍</h2>
+        <p class="section-desc">
+          基地依托华东师范大学教育学、心理学、计算机科学等多学科优势，构建“课程共建—平台共研—人才共育—就业共促”生态。
+          重点服务教育数字化转型，形成可复制、可推广的产教融合样板。
+        </p>
+        <div class="grid-3">
+          <article class="card">
+            <h3>人才培养</h3>
+            <p>建设本硕博贯通培养体系，开设微专业与企业实训营，提升学生真实项目能力。</p>
+          </article>
+          <article class="card">
+            <h3>技术研发</h3>
+            <p>围绕智能教学系统、学习者画像、教育数据治理等方向开展协同攻关。</p>
+          </article>
+          <article class="card">
+            <h3>社会服务</h3>
+            <p>面向区域教育局和中小学提供教师培训、方案咨询与数字课程支持。</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-        // 1. 十神计算
-        function getTenGod(dayMaster, target) {
-            if (!dayMaster || !target) return '';
-            const dayIdx = GAN.indexOf(dayMaster);
-            const targetIdx = GAN.indexOf(target);
-            const dayElem = WUXING_MAP[dayMaster];
-            const targetElem = WUXING_MAP[target];
-            const isSameYinYang = (dayIdx % 2) === (targetIdx % 2);
+    <section id="program" class="muted-bg">
+      <div class="container">
+        <h2 class="section-title">核心项目</h2>
+        <p class="section-desc">围绕教学、科研、实践三条主线打造品牌项目。</p>
+        <div class="grid-2">
+          <article class="card">
+            <h3>“智慧课堂”示范工程</h3>
+            <p>联合企业打造智能备课、课堂诊断、学情分析一体化平台，服务示范校建设。</p>
+          </article>
+          <article class="card">
+            <h3>教育大模型应用工坊</h3>
+            <p>开展提示词工程、教学场景评测、内容安全治理等实践，推动大模型规范落地。</p>
+          </article>
+          <article class="card">
+            <h3>产学研联合实习基地</h3>
+            <p>设立企业联合课题，学生可在真实业务线完成毕业设计与科研转化。</p>
+          </article>
+          <article class="card">
+            <h3>教师数字素养提升计划</h3>
+            <p>面向基础教育教师提供分层培训，形成“培训—应用—评价—认证”闭环。</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-            const relMap = {
-                'wood': {'wood': '比劫', 'fire': '食伤', 'earth': '财', 'metal': '官杀', 'water': '印'},
-                'fire': {'wood': '印', 'fire': '比劫', 'earth': '食伤', 'metal': '财', 'water': '官杀'},
-                'earth': {'wood': '官杀', 'fire': '印', 'earth': '比劫', 'metal': '食伤', 'water': '财'},
-                'metal': {'wood': '财', 'fire': '官杀', 'earth': '印', 'metal': '比劫', 'water': '食伤'},
-                'water': {'wood': '食伤', 'fire': '财', 'earth': '官杀', 'metal': '印', 'water': '比劫'}
-            };
+    <section id="news">
+      <div class="container">
+        <h2 class="section-title">基地动态</h2>
+        <p class="section-desc">欢迎关注近期活动与成果发布。</p>
+        <div class="grid-3">
+          <article class="card">
+            <div class="news-date">2026-03-15</div>
+            <h3>智慧教育产教融合论坛举办</h3>
+            <p>来自高校、企业和中小学的200余位代表参会，共议AI时代教育创新路径。</p>
+          </article>
+          <article class="card">
+            <div class="news-date">2026-02-20</div>
+            <h3>首批联合课程正式开课</h3>
+            <p>“教育数据分析实践”等10门课程上线，采用校企双导师协同授课模式。</p>
+          </article>
+          <article class="card">
+            <div class="news-date">2026-01-08</div>
+            <h3>基地实践中心投入运行</h3>
+            <p>新建教学实验空间支持智慧课堂演示、课程录制与项目孵化活动。</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-            const type = relMap[dayElem][targetElem];
-            if (type === '比劫') return isSameYinYang ? '比肩' : '劫财';
-            if (type === '食伤') return isSameYinYang ? '食神' : '伤官';
-            if (type === '财') return isSameYinYang ? '偏财' : '正财';
-            if (type === '官杀') return isSameYinYang ? '七杀' : '正官';
-            if (type === '印') return isSameYinYang ? '偏印' : '正印';
-            return '';
-        }
+    <section id="contact" class="muted-bg">
+      <div class="container">
+        <h2 class="section-title">合作联系</h2>
+        <p class="section-desc">欢迎企业、学校与机构建立合作，共同推进智慧教育生态建设。</p>
+        <div class="card">
+          <p><strong>联系部门：</strong>华东师范大学智慧教育产教基地办公室</p>
+          <p><strong>联系邮箱：</strong>smartedu-base@ecnu.edu.cn</p>
+          <p><strong>联系电话：</strong>021-0000-0000</p>
+          <p><strong>地址：</strong>上海市普陀区中山北路3663号</p>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        // 2. 十二长生 (星运/自坐)
-        function getLuck(dayStem, branch) {
-            const states = ['长生', '沐浴', '冠带', '临官', '帝旺', '衰', '病', '死', '墓', '绝', '胎', '养'];
-            // 阳干顺行起点
-            const yangStart = {'甲': 11, '丙': 2, '戊': 2, '庚': 5, '壬': 8};
-            // 阴干逆行起点 (长生位)
-            const yinStart = {'乙': 6, '丁': 9, '己': 9, '辛': 0, '癸': 3};
-            
-            const bIdx = ZHI.indexOf(branch);
-            const sIdx = GAN.indexOf(dayStem);
-            const isYang = sIdx % 2 === 0;
-
-            let idx;
-            if (isYang) {
-                idx = (bIdx - yangStart[dayStem] + 12) % 12;
-            } else {
-                idx = (yinStart[dayStem] - bIdx + 12) % 12;
-            }
-            return states[idx];
-        }
-
-        // 3. 空亡 (基于日柱旬首)
-        function getKongWang(dayStem, dayBranch) {
-            const sIdx = GAN.indexOf(dayStem);
-            const bIdx = ZHI.indexOf(dayBranch);
-            // 旬首 = 地支 - 天干
-            let diff = bIdx - sIdx;
-            if (diff < 0) diff += 12;
-            // 0:子丑空, 10:戌亥空, 8:申酉空, 6:午未空, 4:辰巳空, 2:寅卯空
-            const map = {
-                0: ['戌', '亥'], // 甲子旬
-                10: ['申', '酉'], // 甲戌旬
-                8: ['午', '未'], // 甲申旬
-                6: ['辰', '巳'], // 甲午旬
-                4: ['寅', '卯'], // 甲辰旬
-                2: ['子', '丑']  // 甲寅旬
-            };
-            return map[diff];
-        }
-
-        // 4. 神煞计算 (全面版 - 包含20+种神煞)
-        function getShenSha(pillarBranch, dayStem, dayBranch, yearBranch, yearStem) {
-            let list = [];
-            const b = pillarBranch;
-            const dStem = dayStem;
-            const dBranch = dayBranch;
-            const yBranch = yearBranch;
-
-            // --- 贵人系列 ---
-            // 天乙贵人 (日干/年干)
-            const noble = {'甲':['丑','未'], '戊':['丑','未'], '庚':['丑','未'], '乙':['子','申'], '己':['子','申'], '丙':['酉','亥'], '丁':['酉','亥'], '壬':['巳','卯'], '癸':['巳','卯'], '辛':['寅','午']};
-            if(noble[dStem]?.includes(b) || noble[yearStem]?.includes(b)) list.push({name:'天乙贵人', type:'good'});
-
-            // 太极贵人 (日干)
-            const taiji = {'甲':['子','午'], '乙':['子','午'], '丙':['卯','酉'], '丁':['卯','酉'], '戊':['辰','戌','丑','未'], '己':['辰','戌','丑','未'], '庚':['寅','亥'], '辛':['寅','亥'], '壬':['巳','申'], '癸':['巳','申']};
-            if(taiji[dStem]?.includes(b)) list.push({name:'太极贵人', type:'good'});
-
-            // 文昌贵人 (日干) - 读书、才华
-            const wenchang = {'甲':'巳', '乙':'午', '丙':'申', '戊':'申', '丁':'酉', '己':'酉', '庚':'亥', '辛':'子', '壬':'寅', '癸':'卯'};
-            if(wenchang[dStem] === b) list.push({name:'文昌', type:'good'});
-
-            // 禄神 (日干) - 财禄
-            const lu = {'甲':'寅', '乙':'卯', '丙':'巳', '丁':'午', '戊':'巳', '己':'午', '庚':'申', '辛':'酉', '壬':'亥', '癸':'子'};
-            if(lu[dStem] === b) list.push({name:'禄神', type:'good'});
-            
-            // 金舆 (日干) - 财富、配偶 (禄前二位)
-            const jinyuIdx = (ZHI.indexOf(lu[dStem]) + 2) % 12;
-            if (ZHI[jinyuIdx] === b) list.push({name:'金舆', type:'good'});
-
-            // --- 凶煞系列 ---
-            // 羊刃 (日干，阳干最重)
-            const yangren = {'甲':'卯', '乙':'辰', '丙':'午', '丁':'未', '戊':'午', '己':'未', '庚':'酉', '辛':'戌', '壬':'子', '癸':'丑'};
-            if(yangren[dStem] === b) list.push({name:'羊刃', type:'bad'});
-
-            // 桃花 (咸池) - 年/日支 申子辰在酉...
-            const taohua = {'申':'酉','子':'酉','辰':'酉', '寅':'卯','午':'卯','戌':'卯', '巳':'午','酉':'午','丑':'午', '亥':'子','卯':'子','未':'子'};
-            if(taohua[dBranch] === b || taohua[yBranch] === b) list.push({name:'桃花', type:'neutral'});
-
-            // 驿马 (变动) - 年/日支 申子辰在寅...
-            const yima = {'申':'寅','子':'寅','辰':'寅', '寅':'申','午':'申','戌':'申', '巳':'亥','酉':'亥','丑':'亥', '亥':'巳','卯':'巳','未':'巳'};
-            if(yima[dBranch] === b || yima[yBranch] === b) list.push({name:'驿马', type:'neutral'});
-
-            // 华盖 (艺术、孤独) - 年/日支 三合局墓库
-            const huagai = {'申':'辰','子':'辰','辰':'辰', '寅':'戌','午':'戌','戌':'戌', '巳':'丑','酉':'丑','丑':'丑', '亥':'未','卯':'未','未':'未'};
-            if(huagai[dBranch] === b || huagai[yBranch] === b) list.push({name:'华盖', type:'neutral'});
-
-            // 将星 (权力) - 三合局中神
-            const jiangxing = {'申':'子','子':'子','辰':'子', '寅':'午','午':'午','戌':'午', '巳':'酉','酉':'酉','丑':'酉', '亥':'卯','卯':'卯','未':'卯'};
-            if(jiangxing[dBranch] === b || jiangxing[yBranch] === b) list.push({name:'将星', type:'good'});
-
-            // 孤辰/寡宿 (年支) - 方位
-            // 亥子丑(北) -> 寅(孤)/戌(寡)
-            const guchen = {'亥':'寅','子':'寅','丑':'寅', '寅':'巳','卯':'巳','辰':'巳', '巳':'申','午':'申','未':'申', '申':'亥','酉':'亥','戌':'亥'};
-            const guasu =  {'亥':'戌','子':'戌','丑':'戌', '寅':'丑','卯':'丑','辰':'丑', '巳':'辰','午':'辰','未':'辰', '申':'未','酉':'未','戌':'未'};
-            if(guchen[yBranch] === b) list.push({name:'孤辰', type:'bad'});
-            if(guasu[yBranch] === b) list.push({name:'寡宿', type:'bad'});
-            
-            // 劫煞 (申子辰在巳...)
-            const jiesha = {'申':'巳','子':'巳','辰':'巳', '寅':'亥','午':'亥','戌':'亥', '巳':'申','酉':'申','丑':'申', '亥':'寅','卯':'寅','未':'寅'};
-            if(jiesha[yBranch] === b) list.push({name:'劫煞', type:'bad'});
-            
-            // 亡神 (申子辰在亥...)
-            const wangshen = {'申':'亥','子':'亥','辰':'亥', '寅':'巳','午':'巳','戌':'巳', '巳':'寅','酉':'寅','丑':'寅', '亥':'申','卯':'申','未':'申'};
-            if(wangshen[yBranch] === b) list.push({name:'亡神', type:'bad'});
-
-            // 元辰 (大耗) - 阳男阴女 冲前一位... (此处简化为六害位)
-            // 略过复杂算法，仅作示例
-
-            return list;
-        }
-
-        // --- 主逻辑与交互 ---
-        let chartInstance = null;
-
-        document.getElementById('bazi-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value || "缘主";
-            const gender = document.getElementById('gender').value; // 1=男, 0=女
-            const dateStr = document.getElementById('birthDate').value;
-            const timeStr = document.getElementById('birthTime').value;
-            
-            if(!dateStr || !timeStr) { alert("请填写完整信息"); return; }
-            
-            const date = new Date(dateStr);
-            const [h, m] = timeStr.split(':').map(Number);
-
-            // --- 1. 排盘计算 (精简版历法) ---
-            // 年
-            let year = date.getFullYear();
-            const mon = date.getMonth() + 1; // 1-12
-            const day = date.getDate();
-            // 立春分界 (简化: 2月4日)
-            let baziYear = year;
-            if(mon < 2 || (mon === 2 && day < 4)) baziYear = year - 1;
-            
-            const yStemIdx = (baziYear - 4) % 10;
-            const yBranchIdx = (baziYear - 4) % 12;
-            const yStem = GAN[yStemIdx < 0 ? yStemIdx+10 : yStemIdx];
-            const yBranch = ZHI[yBranchIdx < 0 ? yBranchIdx+12 : yBranchIdx];
-
-            // 月 (五虎遁)
-            // 粗略节气: 2.4立春(寅), 3.6惊蛰(卯)...
-            // 简单映射
-            let mBranchIdx = 2; // 默认寅
-            const val = mon * 100 + day;
-            if(val>=204 && val<306) mBranchIdx=2; // 寅
-            else if(val>=306 && val<405) mBranchIdx=3; // 卯
-            else if(val>=405 && val<506) mBranchIdx=4; // 辰
-            else if(val>=506 && val<606) mBranchIdx=5; // 巳
-            else if(val>=606 && val<707) mBranchIdx=6; // 午
-            else if(val>=707 && val<808) mBranchIdx=7; // 未
-            else if(val>=808 && val<908) mBranchIdx=8; // 申
-            else if(val>=908 && val<1008) mBranchIdx=9; // 酉
-            else if(val>=1008 && val<1108) mBranchIdx=10; // 戌
-            else if(val>=1108 && val<1207) mBranchIdx=11; // 亥
-            else if(val>=1207 || val<106) mBranchIdx=0; // 子
-            else mBranchIdx=1; // 丑 (1.6 - 2.3)
-
-            const yStemIndexForMonth = GAN.indexOf(yStem);
-            // 甲己之年丙作首 (0,5 -> 2)
-            const mStart = (yStemIndexForMonth % 5) * 2 + 2;
-            // 寅月是第0个月 (相对于立春)
-            let monthOffset = mBranchIdx - 2; 
-            if(monthOffset < 0) monthOffset += 12;
-            const mStem = GAN[(mStart + monthOffset) % 10];
-            const mBranch = ZHI[mBranchIdx];
-
-            // 日 (UTC 1900-1-1 基准)
-            const base = new Date(1900, 0, 1);
-            let diff = Math.floor((date - base) / 86400000);
-            // 23点后算次日
-            if(h >= 23) diff++;
-            // 1900-1-1 是甲戌(10)
-            let dIdx = (10 + diff) % 60;
-            if(dIdx < 0) dIdx += 60;
-            const dStem = GAN[dIdx % 10];
-            const dBranch = ZHI[dIdx % 12];
-
-            // 时 (五鼠遁)
-            let hBranchIdx = 0;
-            if (h >= 23 || h < 1) hBranchIdx = 0;
-            else hBranchIdx = Math.floor((h + 1) / 2);
-            
-            const dStemIndex = GAN.indexOf(dStem);
-            // 甲己还加甲 (0,5 -> 0)
-            const hStart = (dStemIndex % 5) * 2;
-            const hStem = GAN[(hStart + hBranchIdx) % 10];
-            const hBranch = ZHI[hBranchIdx];
-
-            const pillars = {
-                year: { s: yStem, b: yBranch },
-                month: { s: mStem, b: mBranch },
-                day: { s: dStem, b: dBranch },
-                hour: { s: hStem, b: hBranch }
-            };
-
-            // --- 2. 渲染基础表格 ---
-            document.getElementById('res-name').innerText = name;
-            document.getElementById('res-gender').innerText = gender === '1' ? '乾造' : '坤造';
-            document.getElementById('res-solar-date').innerText = dateStr + ` ${h}时`;
-
-            // 空亡
-            const kongwang = getKongWang(dStem, dBranch);
-
-            // 循环渲染四柱
-            ['year', 'month', 'day', 'hour'].forEach(p => {
-                const s = pillars[p].s;
-                const b = pillars[p].b;
-                
-                // 天干地支
-                document.getElementById(`stem-${p}`).innerText = s;
-                document.getElementById(`branch-${p}`).innerText = b;
-                document.getElementById(`stem-${p}`).style.color = WUXING_COLORS[WUXING_MAP[s]];
-                document.getElementById(`branch-${p}`).style.color = WUXING_COLORS[WUXING_MAP[b]];
-
-                // 十神
-                if(p !== 'day') document.getElementById(`god-${p}`).innerText = getTenGod(dStem, s);
-
-                // 藏干 & 副星
-                const hiddens = CANG_GAN[b];
-                const subGods = hiddens.map(h => getTenGod(dStem, h));
-                document.getElementById(`subgod-${p}`).innerHTML = subGods.join('<br>');
-
-                // 星运
-                document.getElementById(`luck-${p}`).innerText = getLuck(dStem, b);
-
-                // 自坐 (天干对地支)
-                document.getElementById(`zizuo-${p}`).innerText = getLuck(s, b);
-
-                // 纳音
-                document.getElementById(`nayin-${p}`).innerText = NAYIN[s+b] || '-';
-
-                // 空亡
-                if (kongwang.includes(b)) {
-                    const kwEl = document.getElementById(`kongwang-${p}`);
-                    kwEl.innerHTML = '<span class="text-red-500 font-bold border border-red-500 rounded px-1 text-xs">空亡</span>';
-                } else {
-                    document.getElementById(`kongwang-${p}`).innerText = '-';
-                }
-
-                // 神煞
-                const stars = getShenSha(b, dStem, dBranch, yBranch, yStem);
-                const starHtml = stars.map(star => {
-                    const colorClass = star.type === 'good' ? 'tag-good' : (star.type === 'bad' ? 'tag-bad' : 'tag-neutral');
-                    return `<span class="tag-pill ${colorClass}">${star.name}</span>`;
-                }).join('');
-                document.getElementById(`shensha-${p}`).innerHTML = starHtml || '-';
-            });
-
-            // --- 3. 五行统计与通俗建议 ---
-            let scores = {wood:0, fire:0, earth:0, metal:0, water:0};
-            
-            function addScore(elem, val) { scores[WUXING_MAP[elem]] += val; }
-            
-            ['year', 'month', 'day', 'hour'].forEach(p => {
-                addScore(pillars[p].s, 10); // 天干
-                const hiddens = CANG_GAN[pillars[p].b];
-                addScore(hiddens[0], 10); // 本气
-                if(p === 'month') addScore(hiddens[0], 15); // 月令加权
-                if(hiddens[1]) addScore(hiddens[1], 5);
-                if(hiddens[2]) addScore(hiddens[2], 3);
-            });
-
-            // 渲染图表
-            const ctx = document.getElementById('wuxingChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['木 (健康/仁)', '火 (热情/礼)', '土 (诚信/信)', '金 (执行/义)', '水 (智慧/智)'],
-                    datasets: [{
-                        label: '五行能量指数',
-                        data: [scores.wood, scores.fire, scores.earth, scores.metal, scores.water],
-                        backgroundColor: [WUXING_COLORS.wood, WUXING_COLORS.fire, WUXING_COLORS.earth, WUXING_COLORS.metal, WUXING_COLORS.water],
-                        borderRadius: 4
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            // 填充得分文本
-            document.getElementById('score-wood').innerText = scores.wood;
-            document.getElementById('score-fire').innerText = scores.fire;
-            document.getElementById('score-earth').innerText = scores.earth;
-            document.getElementById('score-metal').innerText = scores.metal;
-            document.getElementById('score-water').innerText = scores.water;
-
-            // --- 通俗化建议逻辑 ---
-            const dElem = WUXING_MAP[dStem];
-            const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-            const strongest = sorted[0]; // [elem, score]
-            const weakest = sorted[4];
-            
-            // 简单身强身弱判断 (仅供参考)
-            const selfScore = scores[dElem] + scores[dElem==='wood'?'water':(dElem==='fire'?'wood':(dElem==='earth'?'fire':(dElem==='metal'?'earth':'metal')))];
-            const totalScore = Object.values(scores).reduce((a,b)=>a+b,0);
-            const isStrong = selfScore > (totalScore * 0.45);
-
-            // 生成建议 HTML
-            let adviceHtml = '';
-            
-            // 1. 缺什么/太旺什么
-            adviceHtml += `<p><strong>📊 能量状态：</strong>您的五行能量中，<span class="text-red-700 font-bold">${WUXING_CN[strongest[0]]}</span>气场最强，<span class="text-blue-700 font-bold">${WUXING_CN[weakest[0]]}</span>气场最弱。</p>`;
-            
-            // 2. 补运建议 (用人话)
-            const lackElem = weakest[0];
-            const suggestions = {
-                'wood': {
-                    color: '绿色、青色', item: '木制饰品、植物', action: '多读书、养花草、坚持早起、多吃蔬菜', dir: '东方',
-                    desc: '您需要补充“木”气。在性格上，要学习树木的“向上”和“仁慈”，做事不要太冲动或太悲观，多一点耐心和包容。'
-                },
-                'fire': {
-                    color: '红色、紫色、粉色', item: '电子产品、光亮物', action: '多晒太阳、多笑、多社交、演讲', dir: '南方',
-                    desc: '您需要补充“火”气。在性格上，要让自己更热情、开朗一点，不要太高冷或消极。多展示自己，像太阳一样温暖别人。'
-                },
-                'earth': {
-                    color: '黄色、棕色、卡其色', item: '玉石、陶器', action: '爬山、赤脚踩土、务实做事', dir: '本地或中央',
-                    desc: '您需要补充“土”气。在性格上，要学习大地的“厚重”和“诚信”。做事要脚踏实地，不要胡思乱想，承诺的事情要做到。'
-                },
-                'metal': {
-                    color: '白色、金色、银灰色', item: '金属饰品、金表', action: '健身、整理收纳、制定计划', dir: '西方',
-                    desc: '您需要补充“金”气。在性格上，要学习金属的“果断”和“义气”。做事要有条理，该断则断，不要拖泥带水。'
-                },
-                'water': {
-                    color: '黑色、蓝色', item: '水晶、鱼缸', action: '游泳、喝水、思考、旅游', dir: '北方',
-                    desc: '您需要补充“水”气。在性格上，要学习水的“灵动”和“智慧”。遇到困难学会转弯，多动脑子，不要太固执死板。'
-                }
-            };
-            
-            const sug = suggestions[lackElem];
-            adviceHtml += `<p><strong>🍀 补运指南：</strong>${sug.desc}</p>`;
-            adviceHtml += `<ul class="list-disc pl-5 mt-2 space-y-1">
-                <li><strong>幸运色：</strong>多穿${sug.color}的衣服。</li>
-                <li><strong>开运物：</strong>佩戴${sug.item}。</li>
-                <li><strong>日常行动：</strong>建议${sug.action}。</li>
-                <li><strong>有利方位：</strong>多往${sug.dir}走动或发展。</li>
-            </ul>`;
-
-            document.getElementById('vernacular-advice').innerHTML = adviceHtml;
-
-            // --- 阴阳与格局大白话 ---
-            const yinyang = (GAN.indexOf(dStem)%2 === 0) ? '阳' : '阴';
-            const yyDesc = yinyang === '阳' 
-                ? '您的性格底色偏向“积极、主动、外向”。遇到事情喜欢直接解决，但也容易急躁。建议有时候学会“慢下来”，多听听别人的意见。'
-                : '您的性格底色偏向“内敛、细腻、稳重”。善于思考和忍耐，但有时候容易把话憋在心里。建议多表达自己的真实想法。';
-            document.getElementById('yinyang-text').innerText = yyDesc;
-
-            const strDesc = isStrong 
-                ? '您的命局能量“偏强”。这就像一辆车马力很大，优点是抗压能力强，能承担重任；缺点是容易自我中心，固执。建议您多“输出”，比如去帮助别人、去创作、去拼事业，把过剩的精力释放出来，不要憋着。' 
-                : '您的命局能量“偏弱”。这就像一辆车油耗低但载重有限，优点是心思细腻，敏感；缺点是容易累，容易受环境影响。建议您多“充电”，多依靠团队、长辈、朋友的支持，不要总是单打独斗。';
-            document.getElementById('strength-text').innerText = strDesc;
-
-            // 格局简单判断
-            const mMainGas = CANG_GAN[mBranch][0];
-            const patternGod = getTenGod(dStem, mMainGas);
-            let pName = patternGod + "格";
-            if(patternGod === '比肩') pName = "建禄格 (靠自己)";
-            if(patternGod === '劫财') pName = "月刃格 (拼搏型)";
-            document.getElementById('pattern-name').innerText = pName;
-            document.getElementById('pattern-desc').innerText = `格局决定了您的社会角色。${patternGod}为主导，意味着您在社会中更容易通过“${patternGod}”相关的特质（如${patternGod.includes('财')?'商业/金钱':(patternGod.includes('官')?'管理/名声':'才华/技术')}）获得成功。`;
-
-            // --- 4. 一生详批 (动态参数注入) ---
-            
-            // 根 (Year)
-            const yGod = getTenGod(dStem, yStem);
-            const yLuck = getLuck(dStem, yBranch);
-            const yStars = getShenSha(yBranch, dStem, dBranch, yBranch, yStem).map(s=>s.name);
-            document.getElementById('ref-year').innerText = `[${yStem}${yBranch}] 主星:${yGod} 星运:${yLuck} 神煞:${yStars.join(' ')||'无'}`;
-            document.getElementById('detail-year').innerHTML = `
-                此阶段代表您的<strong>祖业和童年</strong>。
-                <br>1. <strong>祖辈关系：</strong>年干透出“${yGod}”，${yGod.includes('财')?'祖父辈多有经商或经济头脑':(yGod.includes('印')?'祖上多为书香或积善之家':'祖辈性格较为刚烈或奔波')}。
-                <br>2. <strong>童年际遇：</strong>年支坐“${yLuck}”，${['长生','帝旺','冠带'].includes(yLuck)?'说明您出生时家运处于上升期，童年生活相对顺遂，体质较好。': '说明您出生时家境可能比较平淡，或者小时候身体较弱，需要多加养护。'}
-                <br>3. <strong>神煞影响：</strong>${yStars.includes('驿马')?'年柱带驿马，说明您很小的时候可能就随父母奔波搬家，或者容易离家求学。':(yStars.includes('天乙贵人')?'年带贵人，小时候容易遇到好老师或长辈关照，逢凶化吉。':'童年相对平稳。')}
-            `;
-
-            // 苗 (Month)
-            const mGod = getTenGod(dStem, mStem);
-            const mStars = getShenSha(mBranch, dStem, dBranch, yBranch, yStem).map(s=>s.name);
-            document.getElementById('ref-month').innerText = `[${mStem}${mBranch}] 主星:${mGod} 纳音:${NAYIN[mStem+mBranch]}`;
-            document.getElementById('detail-month').innerHTML = `
-                此阶段代表您的<strong>青年时期、性格养成及父母兄弟</strong>。
-                <br>1. <strong>性格核心：</strong>月令是八字的司令部。您生于${WUXING_CN[WUXING_MAP[mBranch]]}旺的月份，${WUXING_MAP[mBranch] === 'fire' ? '性格热情急躁，如火' : (WUXING_MAP[mBranch] === 'water' ? '思维灵活多变，如水' : '性格较为稳重')}。
-                <br>2. <strong>青年运势：</strong>月干“${mGod}”主导了您踏入社会初期的际遇。${mGod.includes('杀')||mGod.includes('伤') ? '青年时期容易叛逆，不服管教，喜欢挑战权威，适合去外地闯荡。' : '青年时期比较循规蹈矩，按部就班地上学、工作。'}
-                <br>3. <strong>家庭关系：</strong>月支为父母宫。${kongwang.includes(mBranch)?'月支逢空亡，可能与父母缘分稍浅，或者青年时期感觉内心比较空虚迷茫，找不到方向。':'与家庭联系紧密。'}
-            `;
-
-            // 花 (Day)
-            const dLuck = getLuck(dStem, dBranch);
-            const dStars = getShenSha(dBranch, dStem, dBranch, yBranch, yStem).map(s=>s.name);
-            document.getElementById('ref-day').innerText = `[${dStem}${dBranch}] 自坐:${dLuck} 神煞:${dStars.join(' ')}`;
-            document.getElementById('detail-day').innerHTML = `
-                此阶段代表您的<strong>中年黄金期、自我及婚姻</strong>。
-                <br>1. <strong>自我状态：</strong>日干代表您自己。自坐“${dLuck}”地，${['帝旺','临官'].includes(dLuck)?'说明您中年时期个人能力极强，自信心爆棚，是事业的巅峰期。':'说明您中年时期更倾向于稳守，做事小心谨慎，不爱冒险。'}
-                <br>2. <strong>夫妻宫分析：</strong>日支为配偶宫。${dBranch === mBranch ? '日月地支相同，婚姻中可能会有争吵，或者另一半性格跟您很像，互不相让。' : (dBranch === yBranch ? '日年相同，可能配偶与您长辈关系密切，或有亲上加亲之象。' : '夫妻宫相对稳定。')}
-                <br>3. <strong>特殊神煞：</strong>${dStars.includes('桃花')?'日坐桃花，说明您（或配偶）人缘极好，异性缘旺，从事人际交往工作非常有利，但也要注意烂桃花。':(dStars.includes('孤辰')||dStars.includes('寡宿')||dStars.includes('华盖')?'日带孤独之星，中年时期内心可能比较孤独，喜欢独处，或沉迷于宗教哲学，与伴侣沟通较少。':'')}
-            `;
-
-            // 婚姻与事业建议
-            document.getElementById('marriage-advice').innerText = `配偶方向建议找八字中“${lackElem}”气场强的人互补。日支为${dBranch}，${['子','午','卯','酉'].includes(dBranch)?'另一半大概率长相不错，或者有气质，但脾气也大。': '另一半长相朴实，性格敦厚，顾家。'}`;
-            document.getElementById('career-advice').innerText = `事业方向建议往${sug.dir}发展。行业选择上，${sug.desc.split('。')[0].replace('您需要补充','从事与')}相关的行业最容易获得成就。`;
-
-
-            // 果 (Hour)
-            const hGod = getTenGod(dStem, hStem);
-            const hLuck = getLuck(dStem, hBranch);
-            document.getElementById('ref-hour').innerText = `[${hStem}${hBranch}] 主星:${hGod} 星运:${hLuck}`;
-            document.getElementById('detail-hour').innerHTML = `
-                此阶段代表您的<strong>晚年运势及子女</strong>。
-                <br>1. <strong>晚景推断：</strong>时柱是人生的归宿。时支坐“${hLuck}”，${['死','墓','绝'].includes(hLuck)?'晚年心态趋于平淡，可能更喜欢清静，或者身体能量下降，适合养生。':'晚年依然精力旺盛，可能退而不休，依然在为子孙或事业操劳。'}
-                <br>2. <strong>子女关系：</strong>时干透出“${hGod}”。${hGod.includes('食')||hGod.includes('伤')?'子女聪明有才华，晚年能享子女的福，或者您晚年依然有像年轻人一样的心态。':(hGod.includes('杀')?'子女个性强，不在身边，或者晚年您依然有威严。':'晚年生活平稳。')}
-                <br>3. <strong>最终建议：</strong>晚年最重要的不是钱财，而是心态。建议多接触五行属“${lackElem}”的事物来平衡身心。
-            `;
-
-            // 胎元/命宫/旬首 (已移除，直接显示空值以保持布局)
-            document.getElementById('taiyuan-text').parentElement.classList.add('hidden');
-            document.getElementById('minggong-text').parentElement.classList.add('hidden');
-            document.getElementById('xunshou-text').parentElement.classList.add('hidden');
-
-            // Reveal
-            document.getElementById('input-area').classList.add('hidden');
-            document.getElementById('result-area').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-         // ✅ 「返回重算」按钮：隐藏结果，重新显示输入区并清空表单
-    const recalcBtn = document.getElementById('btn-recalc');
-    if (recalcBtn) {
-        recalcBtn.addEventListener('click', function () {
-            // 清空表单
-            document.getElementById('bazi-form').reset();
-
-            // 隐藏结果区域
-            document.getElementById('result-area').classList.add('hidden');
-
-            // 显示输入区域
-            document.getElementById('input-area').classList.remove('hidden');
-
-            // 销毁图表，避免重复叠加
-            if (chartInstance) {
-                chartInstance.destroy();
-                chartInstance = null;
-            }
-
-            // 回到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-    }
-        // 「烦心事我帮你看看？」按钮：跳转到 project.html
-    const projectBtn = document.getElementById('btn-project');
-    if (projectBtn) {
-        projectBtn.addEventListener('click', function () {
-            window.location.href = "https://lll19890928-hash.github.io/lily.github.io/project.html";
-        });
-    }
-    </script>
+  <footer>
+    <div class="container footer-grid">
+      <div>© 2026 华东师范大学智慧教育产教基地</div>
+      <div>本页面为静态展示模板，可按需接入新闻系统、报名系统与后台管理。</div>
+    </div>
+  </footer>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
